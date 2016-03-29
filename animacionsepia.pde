@@ -1,5 +1,7 @@
-/* OpenProcessing Tweak of *@*http://www.openprocessing.org/sketch/61722*@* */
-/* !do not delete the line above, required for linking your tweak if you upload again */
+//Blend de pixels
+
+//Tecla 1 - Graffiti Pera, es el que carga por defecto
+//Tecla 2 - Palacio Salvo
 
 import java.awt.event.KeyEvent;
 RandomWalk [] walk;
@@ -10,7 +12,7 @@ void setup()
   size (675, 450);
   frameRate(320);
   //smooth();
-  PImage img = pic == 0 ? loadImage ("pera11.jpg") : loadImage ("selbst.jpg");
+  PImage img = pic == 0 ? loadImage ("pera11.jpg") : loadImage ("salvo.jpg");
   PImage bg = loadImage ("bg.jpg");
 
   walk = new RandomWalk [2];
@@ -28,11 +30,11 @@ void draw ()
 class RandomWalk
 {
   PImage sourceImg, displayImg, walkImg, bg;
-  int x, y, width, height, a, emptyPix;
+  int x, y, width, height, a, pixVacio;
   boolean randomWalk;
-  float completness;
+  float completitud;
 
-  RandomWalk (PImage img, PImage bg, int x, int y, boolean randomWalk, int a, float completness)
+  RandomWalk (PImage img, PImage bg, int x, int y, boolean randomWalk, int a, float completitud)
   {
     this.sourceImg = img;
     this.bg = bg;
@@ -40,7 +42,7 @@ class RandomWalk
     this.y = y;
     this.randomWalk = randomWalk;
     this.a = a;
-    this.completness = completness;
+    this.completitud = completitud;
     init();
   }
 
@@ -55,7 +57,7 @@ class RandomWalk
     walkImg.updatePixels();
     arrayCopy (walkImg.pixels, displayImg.pixels);
     displayImg.updatePixels();
-    emptyPix = displayImg.pixels.length-1;
+    pixVacio = displayImg.pixels.length-1;
     this.width = sourceImg.width;
     this.height = sourceImg.height;
   }
@@ -64,7 +66,7 @@ class RandomWalk
   {
     tint (255, a);
     image (displayImg, 0, 0);
-    saveFrame("frames/####.tif");
+    //saveFrame("frames/####.tif"); quitar comentarios para guardar frames
   }
 
   void updateDisplayImage ()
@@ -91,7 +93,7 @@ class RandomWalk
       displayImg.pixels [y*displayImg.width+x] = blendC;
       walkImg.updatePixels();
       displayImg.updatePixels();
-      if (c == color (255, 0)) emptyPix--;
+      if (c == color (255, 0)) pixVacio--;
     }
   }
 
@@ -128,9 +130,9 @@ class RandomWalk
     return PVectorArrayListToArray (alPV);
   }
 
-  float getCompletness ()
+  float getcompletitud ()
   {
-    return ((completness * 100.0 ) - (100.0 - (float) emptyPix / ((float) displayImg.pixels.length) * 100.0) );
+    return ((completitud * 100.0 ) - (100.0 - (float) pixVacio / ((float) displayImg.pixels.length) * 100.0) );
   }
 
   PImage getBackground ()
@@ -140,7 +142,7 @@ class RandomWalk
 
   boolean getIsFinished ()
   {
-    if ((completness * 100.0 ) - (100.0 - (float) emptyPix / ((float) displayImg.pixels.length) * 100.0) >= 0) return false;
+    if ((completitud * 100.0 ) - (100.0 - (float) pixVacio / ((float) displayImg.pixels.length) * 100.0) >= 0) return false;
     else return true;
   }
 
@@ -157,7 +159,7 @@ class RandomWalk
 
   void move()
   {
-    if ((completness * 100.0 ) - (100.0 - (float) emptyPix / ((float) displayImg.pixels.length) * 100.0) >= 0)
+    if ((completitud * 100.0 ) - (100.0 - (float) pixVacio / ((float) displayImg.pixels.length) * 100.0) >= 0)
     {
       if (randomWalk)  randomMove();
       else interestingMove();
@@ -166,15 +168,15 @@ class RandomWalk
 
   void interestingMove ()
   {
-    PVector [] neighbors = createPosArray (x, y, 1);
+    PVector [] vecinos = createPosArray (x, y, 1);
 
     int pos = 0, val = 0, dif = 0, dir = 0;
 
-    for (int i = 0; i < neighbors.length; i++)
+    for (int i = 0; i < vecinos.length; i++)
     {
       dir = (int) random (2);
-      PVector [] feld = createPosArray ((int) neighbors[i].x, (int) neighbors[i].y, 1);
-      val = difference ((int) neighbors[i].x, (int) neighbors[i].y, feld);
+      PVector [] feld = createPosArray ((int) vecinos[i].x, (int) vecinos[i].y, 1);
+      val = difference ((int) vecinos[i].x, (int) vecinos[i].y, feld);
 
       if (dir == 0)
       {
@@ -194,16 +196,16 @@ class RandomWalk
       }
     }
 
-    if (neighbors.length != 0)
+    if (vecinos.length != 0)
     {
       if (dif < 5) 
       {
-        createNewPos (getDirByPos((int) neighbors [pos].x, (int) neighbors[pos].y));
+        createNewPos (getDirByPos((int) vecinos [pos].x, (int) vecinos[pos].y));
         updateDisplayImage();
         randomMove();
       }
       else {
-        createNewPos (getDirByPos((int) neighbors [pos].x, (int) neighbors[pos].y));
+        createNewPos (getDirByPos((int) vecinos [pos].x, (int) vecinos[pos].y));
         updateDisplayImage();
       }
     }
